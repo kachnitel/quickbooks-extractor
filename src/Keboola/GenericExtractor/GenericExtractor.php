@@ -51,7 +51,8 @@ class GenericExtractor extends Extractor
 		$client->getClient()->getEmitter()->attach(new LogRequest);
 
 		$parser = Json::create($config, $this->getLogger(), $this->getTemp(), $this->metadata);
-		$parser->getParser()->setAllowArrayStringMix(true);
+		// $parser->getParser()->setAllowArrayStringMix(true);
+		$parser->getParser()->setAutoUpgradeToArray(true);
 
 		$builder = new Builder();
 
