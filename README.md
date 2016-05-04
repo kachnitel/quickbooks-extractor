@@ -1,4 +1,4 @@
-# Extractor configuration
+# Extractor configuration 2
 ---
 
 # Basics
