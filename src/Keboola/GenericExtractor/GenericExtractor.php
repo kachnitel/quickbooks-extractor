@@ -77,9 +77,12 @@ class GenericExtractor extends Extractor
 
     public function run(Config $config)
     {
+        var_dump($this->auth->getOAuthData());
+
         $client = RestClient::create(
             [
-                'base_url' => $this->baseUrl,
+//                 'base_url' => $this->baseUrl,
+                'base_url' => "https://quickbooks.api.intuit.com/v3/company/{$this->auth->getOAuthData()->realm_id}/",
                 'defaults' => [
                     'headers' => UserFunction::build($this->headers, ['attr' => $config->getAttributes()])
                 ]

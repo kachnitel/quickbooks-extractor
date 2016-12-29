@@ -28,6 +28,10 @@ class OAuth10 implements AuthInterface
      * @var string
      */
     protected $consumerSecret;
+    /**
+     * @var object
+     */
+    protected $oauthData;
 
     public function __construct(array $authorization)
     {
@@ -48,6 +52,9 @@ class OAuth10 implements AuthInterface
         $this->tokenSecret = $data->oauth_token_secret;
         $this->consumerKey = $oauthApiDetails['appKey'];
         $this->consumerSecret = $oauthApiDetails['#appSecret'];
+
+        $this->oauthData = $data;
+        unset($this->oauthData->oauth_token, $this->oauthData->oauth_token_secret);
     }
 
     /**
@@ -64,5 +71,10 @@ class OAuth10 implements AuthInterface
 
         $client->getClient()->getEmitter()->attach($sub);
         $client->getClient()->setDefaultOption('auth', 'oauth');
+    }
+
+    public function getOAuthData()
+    {
+        return $this->oauthData;
     }
 }
