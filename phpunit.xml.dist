@@ -12,6 +12,8 @@
 
 	<testsuite name="Generic Extractor Test Suite">
 		<directory>./tests</directory>
+        <exclude>./tests/Keboola/GenericExtractor/MockExecutionTest.php</exclude>
+        <exclude>./tests/Keboola/GenericExtractor/CacheTest.php</exclude>
 	</testsuite>
 
 </phpunit>
