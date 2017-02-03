@@ -13,7 +13,8 @@ use Keboola\Juicer\Extractor\Extractor,
     Keboola\Juicer\Parser\JsonMap,
     Keboola\Juicer\Parser\ParserInterface,
     Keboola\Juicer\Pagination\ScrollerInterface,
-    Keboola\Juicer\Exception\ApplicationException;
+    Keboola\Juicer\Exception\ApplicationException,
+    Keboola\Juicer\Exception\UserException;
 use Keboola\GenericExtractor\GenericExtractorJob,
     Keboola\GenericExtractor\Authentication\AuthInterface,
     Keboola\GenericExtractor\Config\Api,
@@ -77,12 +78,18 @@ class GenericExtractor extends Extractor
 
     public function run(Config $config)
     {
-        var_dump($this->auth->getOAuthData());
+        $oauthData = method_exists($this->auth, 'getOAuthData') ? $this->auth->getOAuthData() : new \StdClass;
+        if (empty($oauthData->realm_id)) {
+            throw new UserException('No `realm_id` in OAuth data');
+// $oauthData->realm_id = 'test';
+        }
+
+//         var_dump($oauthData);
 
         $client = RestClient::create(
             [
 //                 'base_url' => $this->baseUrl,
-                'base_url' => "https://quickbooks.api.intuit.com/v3/company/{$this->auth->getOAuthData()->realm_id}/",
+                'base_url' => "https://quickbooks.api.intuit.com/v3/company/{$oauthData->realm_id}/",
                 'defaults' => [
                     'headers' => UserFunction::build($this->headers, ['attr' => $config->getAttributes()])
                 ]
@@ -136,7 +143,8 @@ class GenericExtractor extends Extractor
     protected function runJob($jobConfig, $client, $config, $builder)
     {
         // FIXME this is rather duplicated in RecursiveJob::createChild()
-        $job = new GenericExtractorJob($jobConfig, $client, $this->parser);
+        $parser = !empty($jobConfig->getConfig()['parseReport']) ? $this->getReportParser() : $this->getParser();
+        $job = new GenericExtractorJob($jobConfig, $client, $parser);
         $job->setScroller($this->scroller);
         $job->setAttributes($config->getAttributes());
         $job->setMetadata($this->metadata);
@@ -150,6 +158,10 @@ class GenericExtractor extends Extractor
         }
 
         $job->run();
+    }
+
+    public function getReportParser() {
+
     }
 
     /**

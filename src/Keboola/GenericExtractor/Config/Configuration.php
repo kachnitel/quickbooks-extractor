@@ -7,6 +7,7 @@ use Keboola\Juicer\Config\Configuration as BaseConfiguration,
     Keboola\Juicer\Exception\FileNotFoundException,
     Keboola\Juicer\Exception\ApplicationException,
     Keboola\Juicer\Exception\NoDataException;
+use Keboola\Utils\Utils;
 
 /**
  * {@inheritdoc}
@@ -14,6 +15,22 @@ use Keboola\Juicer\Config\Configuration as BaseConfiguration,
 class Configuration extends BaseConfiguration
 {
     const CACHE_TTL = 604800;
+
+    /**
+     * @return Config[]
+     */
+    public function getMultipleConfigs()
+    {
+        if (!file_exists($this->dataDir . '/config.yml') && file_exists($this->dataDir . '/config.json')) {
+            $cfg = Utils::json_decode(file_get_contents($this->dataDir . '/config.json'));
+            $yml = YamlFile::create($this->dataDir . '/config.yml', YamlFile::MODE_WRITE);
+            $yml->setData(Utils::objectToArray($cfg));
+var_dump('aaa', $yml->getData());
+            $yml->save();
+        }
+
+        return parent::getMultipleConfigs();
+    }
 
     /**
      * @return array

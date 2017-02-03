@@ -2,7 +2,8 @@
 namespace Keboola\GenericExtractor;
 
 use Keboola\GenericExtractor\GenericExtractor,
-    Keboola\GenericExtractor\Config\Api;
+    Keboola\GenericExtractor\Config\Api,
+    Keboola\GenericExtractor\Authentication\OAuth10;
 use Keboola\Juicer\Config\Config,
     Keboola\Juicer\Parser\Json,
     Keboola\Juicer\Common\Logger;
@@ -31,6 +32,19 @@ class GenericExtractorTest extends ExtractorTestCase
 
         $cfg = new Config('testApp', 'testCfg', []);
         $api = Api::create(['baseUrl' => 'http://example.com'], $cfg);
+        $api->setAuth(new OAuth10([
+            'oauth_api' => [
+                'credentials' => [
+                    '#data' => json_encode([
+                        'realm_id' => 1234,
+                        'oauth_token' => 'aaa',
+                        'oauth_token_secret' => 'bbb'
+                    ]),
+                    'appKey' => 'asd123',
+                    '#appSecret' => 'aassdd112233'
+                ]
+            ]
+        ]));
 
         $ex = new GenericExtractor(new Temp);
         $ex->setLogger($logger);
