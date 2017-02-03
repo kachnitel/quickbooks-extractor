@@ -25,7 +25,6 @@ class Configuration extends BaseConfiguration
             $cfg = Utils::json_decode(file_get_contents($this->dataDir . '/config.json'));
             $yml = YamlFile::create($this->dataDir . '/config.yml', YamlFile::MODE_WRITE);
             $yml->setData(Utils::objectToArray($cfg));
-var_dump('aaa', $yml->getData());
             $yml->save();
         }
 
